@@ -7,3 +7,5 @@ numpy
 tiktoken
 sentence-transformers
 langchain-community
+python-dotenv
+python-telegram-bot
