@@ -76,7 +76,7 @@ class PDFProcessor:
     """Handles PDF processing, text extraction, and vector store creation."""
 
     def __init__(self, embeddings_model_name="sentence-transformers/all-MiniLM-L6-v2"):
-        self.embeddings = HuggingFaceEmbeddings(model_name=embeddings_model_name)
+        self.embeddings = HuggingFaceEmbeddings(model_name=embeddings_model_name, model_kwargs={'device': 'cpu'})
         self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=1000,
             chunk_overlap=100,
