@@ -59,6 +59,11 @@ class OpenRouterLLM(LLM):
             result = response.json()
             return result["choices"][0]["message"]["content"]
             
+        except requests.exceptions.JSONDecodeError:
+            logger.error("Failed to decode JSON from API response.")
+            logger.error(f"Response status code: {response.status_code}")
+            logger.error(f"Response text: {response.text}")
+            return f"Error: The AI service returned an invalid (non-JSON) response. Status: {response.status_code}. Body: {response.text[:200]}"
         except requests.exceptions.Timeout as e:
             logger.error(f"API request timed out: {str(e)}")
             return "Error: The request to the AI service timed out. Please try again."
@@ -67,10 +72,12 @@ class OpenRouterLLM(LLM):
             return "Error: Could not connect to the AI service. Please check your internet connection."
         except requests.exceptions.RequestException as e:
             logger.error(f"API request failed: {str(e)}")
+            if e.response is not None:
+                 return f"Error: API request failed with status {e.response.status_code}: {e.response.text}"
             return f"Error: An API request failed: {str(e)}"
         except (KeyError, IndexError) as e:
             logger.error(f"Invalid API response format: {str(e)}")
-            return "Error: The AI service returned an invalid response."
+            return "Error: The AI service returned an invalid response format after successful request."
 
 class PDFProcessor:
     """Handles PDF processing, text extraction, and vector store creation."""
