@@ -19,7 +19,7 @@ class OpenRouterLLM(LLM):
 
     api_key: str = Field(...)
     model: str = Field(default="meta-llama/llama-3.3-8b-instruct:free")
-    base_url: str = Field(default="https://openrouter.ai/api/v1")
+    base_url: str = Field(default="https://openrouter.ai/api/v1/chat/completions")
 
     @property
     def _llm_type(self) -> str:
