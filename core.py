@@ -4,10 +4,10 @@ import fitz  # PyMuPDF
 import requests
 from typing import List, Any, Optional
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain.llms.base import LLM
-from langchain.schema import Generation, LLMResult
+from langchain.schema import Generation, LLMResult, Document
 from langchain.callbacks.manager import CallbackManagerForLLMRun
 from pydantic import Field
 import logging
@@ -97,6 +97,21 @@ class PDFProcessor:
     def split_text(self, text: str) -> List[str]:
         """Split text into chunks"""
         return self.text_splitter.split_text(text)
+
+    def split_text_with_metadata(self, text: str, metadata: dict) -> List[Document]:
+        """Split text into chunks and attach metadata."""
+        # Create documents and then split them
+        docs = self.text_splitter.create_documents([text], metadatas=[metadata])
+        return self.text_splitter.split_documents(docs)
+
+    def create_vector_store_with_metadata(self, documents: List[Document]) -> Optional[FAISS]:
+        """Create FAISS vector store from documents with metadata."""
+        try:
+            vectorstore = FAISS.from_documents(documents, self.embeddings)
+            return vectorstore
+        except Exception as e:
+            logger.error(f"Vector store creation error: {str(e)}")
+            return None
 
     def create_vector_store(self, chunks: List[str]) -> Optional[FAISS]:
         """Create FAISS vector store from text chunks"""
