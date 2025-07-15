@@ -10,3 +10,4 @@ langchain-community
 python-dotenv
 python-telegram-bot
 pydantic
+langchain_huggingface
